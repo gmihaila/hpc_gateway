@@ -1,4 +1,12 @@
-# import the Flask class from the flask module
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Python Flask Server to automate Jupyter Lab port forward on HPC cluster.
+Start the server with the 'run()' method
+
+(C) 2020 George Mihaila
+email georgemihaila@my.unt.edu
+"""
 from flask import Flask, render_template, redirect, url_for, request
 import pexpect
 import sys
@@ -11,7 +19,7 @@ import sqlite3
 import socket
 from contextlib import closing
 
-
+# GLOBAL VARIABLES
 LOGIN_NODE = 'vis.acs.unt.edu'
 DATE_TEMPLATE = '%Y-%m-%d %H:%M:%S'
 SESSION_TIME = 60  # seconds
@@ -20,9 +28,11 @@ DB_NAME = 'jupyter_talon_usage.db'
 
 def find_free_port():
     """Find available port
-    Args:
+
+    Return:
         available_port: Available random port. Int type.
     """
+
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
         s.bind(('', 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -30,30 +40,49 @@ def find_free_port():
         return available_port
 
 
-def logger(user, message, level, fname='logs.log', verbose=True):
+def logger(user, message, level, fname='logs.log', verbose=True, extra_log=True):
   """Logging function
 
   Args:
     user: user id
     message: text needed logged
     level: 'CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET'
-    fname: file name to save logs
+    fname: file name to save all logs
     verbose: if print to stdou
+    extra_log: create 'logs/' and write individual logs for each user
 
   Source: https://docs.python.org/2/howto/logging.html
   """
+
+  # get time of log
   time_log = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+  # check input arguments types
   assert level in ['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET']
   assert str(user) and str(message)
+  # create log line from message and date
+  line = '%s %s %s %s'%(time_log, str(user), level, str(message))
+  # print to stdout if veborse
+  if verbose: print(line)
+  # append to main log file
   with open(fname, 'a') as f:
-    line = '%s %s %s %s'%(time_log, str(user), level, str(message))
-    if verbose: print(line)
     f.write(line + '\n')
+  if extra_log:
+    # create if folder does not exist
+    if os.path.isdir('logs') is False: os.mkdir('logs')
+    # append to user log file
+    with open('logs/%s.log'%user, 'a') as f:
+      f.write(line + '\n')
   return
 
 
-
 def kill_pid(pid):
+    """Kill any running processes based on PID.
+
+    Args:
+        pid: pid of process that will be killed.
+    Return:
+        False or True if was killed or not
+    """
     try:
         os.kill(int(pid), 0)
         return True
@@ -62,8 +91,10 @@ def kill_pid(pid):
 
 
 def create_db(db_name):
-    '''
-      CREATE DATABASE IF NOT EXISTS.
+    '''Create new Database if it does not exist.
+
+    Args:
+        db_name: Database name.
     '''
 
     try:
@@ -84,17 +115,26 @@ def create_db(db_name):
         return True
     except Exception as e:
         logger(user='root', message='DB FAILED! %s'%str(e), level='ERROR')
-        print("DB FAILED!", e)
         return False
 
 
 def add_db(db_name, euid, last_login, local_port, talon_port, login_node, pid_session, state_session):
-    '''
-      ADD INSTANCE IN DATABASE. CREATE DATABASE IF NOT EXISTS.
-      COLUMNS: 'euid', 'first_login', 'last_login', 'local_port', 'talon_port', 'login_node', 'count_logins', 'pid_session', 'state_session'
-      state_session:  'initiated' [login is started]
-                      'running'   [login is successfull]
-                      'ended'     [session ended]
+    '''Add instance in database or create database if it does not exist.
+    Columns: 'euid', 'first_login', 'last_login', 'local_port', 'talon_port',
+        'login_node', 'count_logins', 'pid_session', 'state_session'.
+
+    Args:
+        db_name: Database name.
+        euid: User id.
+        last_login: Last login date recorded
+        local_port: Port on local VM gateway used to forward.
+        talon_port: Port on HPC needed to forward.
+        login_node: Hostname on HPC.
+        pid_session: Pid of running process that does ssh tunneling.
+        state_session: State of the process:
+            'initiated' [login is started]
+            'running'   [login is successfull]
+            'ended'     [session ended]
     '''
     # DB CONNECTION
     conn = None
@@ -147,7 +187,6 @@ def add_db(db_name, euid, last_login, local_port, talon_port, login_node, pid_se
                 state_session,
                 euid))
             logger(user=euid, message="USER %s STATE '%s'" % (euid, state_session), level='INFO')
-            print("USER %s STATE '%s'" % (euid, state_session))
         else:
             # EUID NOT IN DB
             # ADD EUID IN DB
@@ -167,11 +206,19 @@ def add_db(db_name, euid, last_login, local_port, talon_port, login_node, pid_se
         conn.close()
     except Exception as e:
         logger(user=euid, message='\tadd_db FAILED! %s'%str(e), level='ERROR')
-        print("\tadd_db FAILED!", e)
     return
 
 
 def from_db(db_name, euid):
+    """Extract row from dabatase of a specific user.
+
+    Args:
+        db_name: Database name used to read.
+        euid: User id of returned instance.
+    Return:
+        row: Row in database from euid.
+    """
+
     row = None
     columns = ['first_login', 'last_login', 'local_port', 'talon_port',
                'login_node', 'count_logins', 'pid_session', 'state_session']
@@ -198,16 +245,12 @@ def from_db(db_name, euid):
                 # DICTIONARY FORMAT
                 row = {k: v for k, v in zip(columns, row[0])}
                 logger(user=euid, message='USER %s RETRIEVED FROM DB!'%euid, level='INFO')
-                print("USER %s RETRIEVED FROM DB!"%euid)
             else:
                 logger(user=euid, message='EUID %s NOT ADDED TO DB!'%euid, level='WARNING')
-                print('EUID %s NOT ADDED TO DB! ' % euid)
         else:
             logger(user=euid, message='DB %s does not exist!'%db_name, level='WARNING')
-            print("DB %s does not exist!" % db_name)
     except Exception as e:
         logger(user=euid, message='from_db FAILED! %s'%str(e), level='ERROR')
-        print("from_db FAILED!", e)
     return row
 
 
@@ -215,31 +258,43 @@ def from_db(db_name, euid):
 
 
 def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
-    # THIS FUNCTION EXECUTES THE FOLLOWNG PROCEDURES:
-    # - USER EXISTS:
-    # CHECK IF USER EXISTS
-    # CHECK IF jupyter_notebook_config.json EXISTS
-    # - JUPYTER CONFIG EXISTS:
-    # CHECK IF JUPYTER CONFIG EXISTS
-    # REQUEST HASH PASSWORD SHA1
-    # - GRAB SHA1 HASH:   CHECK IF HASH EXISTS
-    # REMOVE POTENTIAL jupyter_notebook_config.py FILE
-    # RECREATE jupyter_notebook_config.py FILE
-    # - CONFIGURE jupyter_notebook_config.py:
-    # ALLOW REMOTE ACCESS
-    # TIMEOUT KILL NOTEBOOK
-    # CHECK RUNNING NOTEBOOKS
-    # - LOOKING FOR RUNNING JUPYTER INSTANCES:
-    # CHECK IF RUNNING JUPYTER
-    # - GRAB LAST RUNNING JUPYTER NOTEBOOK PORT
-    # - CHECK IF JUPYTER CONFIG NOT EXISTS:
-    # JUPYTER CONFIG NOT EXISTS AND USER EXISTS
-    # JUPYTER CONFIG CREATED
-    # - CHECK IF FOUND NEWLY CREATED JUPYTER CONFIGURATION:
-    # FOUND NEWLY CREATED JUPYTER CONFIG
+    """Jupyter configure and checking running instances.
+    This function executes following procedures:
+        USER EXISTS:
+            - CHECK IF USER EXISTS
+        CHECK IF jupyter_notebook_config.json EXISTS
+            - JUPYTER CONFIG EXISTS:
+        CHECK IF JUPYTER CONFIG EXISTS
+        REQUEST HASH PASSWORD SHA1
+            - GRAB SHA1 HASH:   CHECK IF HASH EXISTS
+        REMOVE POTENTIAL jupyter_notebook_config.py FILE
+        RECREATE jupyter_notebook_config.py FILE
+            - CONFIGURE jupyter_notebook_config.py:
+        ALLOW REMOTE ACCESS
+        TIMEOUT KILL NOTEBOOK
+        CHECK RUNNING NOTEBOOKS
+            - LOOKING FOR RUNNING JUPYTER INSTANCES:
+        CHECK IF RUNNING JUPYTER
+            - GRAB LAST RUNNING JUPYTER NOTEBOOK PORT
+            - CHECK IF JUPYTER CONFIG NOT EXISTS:
+        JUPYTER CONFIG NOT EXISTS AND USER EXISTS
+        JUPYTER CONFIG CREATED
+            - CHECK IF FOUND NEWLY CREATED JUPYTER CONFIGURATION:
+        FOUND NEWLY CREATED JUPYTER CONFIG
+    Args:
+        euid: User id.
+        passw: Password for login to HPC.
+        addrs: Hostname of HPC.
+        running_pid: Current PID of process running.
+        timeout: Seconds until end session.
+    Return:
+        is_user: True / Flase if user exists on HPC.
+        is_jupyter_config: True / Flase if user has proper jupyter configure file.
+        jupyter_sha: User specific password key.
+        jupyter_last_port: Last running jupyter session port on HPC.
+    """
 
     logger(user=euid, message='CHECK IF ANY RUNNING JUPYTER and HASH AND JUPYTER CONFIG', level='INFO')
-    print("CHECK IF ANY RUNNING JUPYTER and HASH AND JUPYTER CONFIG")
     # UPDATE USER IN DATABASE
     add_db( db_name=DB_NAME,
             euid = euid,
@@ -286,6 +341,7 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
         try:
             child.expect('\n')
             out_line = child.before
+            # ONLY LOG
             logger(user=euid, message=str(out_line), level='INFO', verbose=False)
             # print("out_line", out_line)
 
@@ -294,7 +350,6 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 # USER EXISTS
                 is_user = True
                 logger(user=euid, message='\tUSER EXISTS', level='INFO')
-                print("\tUSER EXISTS")
                 # CHECK IF jupyter_notebook_config.json EXISTS
                 child.sendline(shell_jupyter_config_path)
 
@@ -303,7 +358,6 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 # JUPYTER CONFIG EXISTS
                 is_jupyter_config = True
                 logger(user=euid, message='\tJUPYTER CONFIG EXISTS', level='INFO')
-                print("\tJUPYTER CONFIG EXISTS")
                 # REQUEST HASH PASSWORD SHA1
                 child.sendline(shell_jupyter_config_sha)
 
@@ -311,10 +365,8 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
             if ("sha1:" in out_line) and is_jupyter_config:
                 # GRAB SHA1 HASH
                 logger(user=euid, message='\tGRAB SHA1 HASH', level='INFO')
-                print("\tGRAB SHA1 HASH")
                 jupyter_sha = str(out_line.replace('"', '')).strip()
                 logger(user=euid, message='\tjupyter_sha', level='INFO')
-                print("\tjupyter_sha", jupyter_sha)
                 # START JUPYTER CONFIGURATION
                 configuring_jupyter = True
                 # REMOVE POTENTIAL jupyter_notebook_config.py FILE
@@ -323,7 +375,6 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 child.sendline(
                     '/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter notebook --generate-config')
                 logger(user=euid, message='\t\tCREATED jupyter_notebook_config.py FILE', level='INFO')
-                print("\t\tCREATED jupyter_notebook_config.py FILE")
 
             # CONFIGURE jupyter_notebook_config.py
             if "Writing default config to:" in out_line and configuring_jupyter:
@@ -338,7 +389,6 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 child.sendline(shutdown_no_activity_timeout)
                 configuring_jupyter = False
                 logger(user=euid, message='\t\tJUPYTER CONFIG FILE FINISHED CONFIGURE', level='INFO')
-                print("\t\tJUPYTER CONFIG FILE FINISHED CONFIGURE")
                 # CHECK RUNNING NOTEBOOKS
                 child.sendline(shell_jupyter_running)
 
@@ -348,18 +398,15 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 checking_running_jupyters = True
                 jupyter_last_port = "no_ports"
                 logger(user=euid, message='\tLOOKING FOR RUNNING JUPYTER INSTANCES', level='INFO')
-                print("\tLOOKING FOR RUNNING JUPYTER INSTANCES")
 
             # GRAB LAST RUNNING JUPYTER IF RUNNING JUPYTER and HASH AND JUPYTER CONFIG AND USER EXISTS
             if ("http://" in out_line) and checking_running_jupyters:
                 # GRAB LAST RUNNING JUPYTER PORT
                 logger(user=euid, message='\tGRAB LAST RUNNING JUPYTER NOTEBOOK PORT', level='INFO')
-                print("\tGRAB LAST RUNNING JUPYTER NOTEBOOK PORT")
                 jupyter_last_port = out_line.split(":")[2].split("/")[0]
                 # STOP LOOKING FOR RUNNING JUPYTER NOTEBOOKS SERVERS
                 checking_running_jupyters = False
                 logger(user=euid, message='\t\tjupyter_last_port %s'%jupyter_last_port, level='INFO')
-                print("\t\tjupyter_last_port", jupyter_last_port)
                 child.close(force=True)
                 return is_user, is_jupyter_config, jupyter_sha, jupyter_last_port
 
@@ -367,7 +414,6 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
             if ("('jupyter_config: ', False)" in out_line) and is_user:
                 # JUPYTER CONFIG NOT EXISTS AND USER EXISTS
                 logger(user=euid, message='\tJUPYTER CONFIG NOT EXISTS AND USER EXISTS', level='INFO')
-                print("\tJUPYTER CONFIG NOT EXISTS AND USER EXISTS")
                 # CREATE JUPYTER PASSWORD
                 child.sendline(
                     "/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter notebook password")
@@ -376,33 +422,33 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 child.expect("Verify password:")
                 child.sendline(passw)
                 logger(user=euid, message='\t\tJUPYTER CONFIG CREATED', level='INFO')
-                print("\t\tJUPYTER CONFIG CREATED")
 
             # CHECK IF FOUND NEWLY CREATED JUPYTER CONFIGURATION
             if ("Wrote hashed password to" in out_line):
-                print("\tFOUND NEWLY CREATED JUPYTER CONFIG")
+                logger(user=euid, message='\tFOUND NEWLY CREATED JUPYTER CONFIG', level='INFO')
                 child.sendline(shell_jupyter_config_path)
 
         except:
             logger(user=euid, message='\tjupyter_port ENDED!', level='WARNING')
-            print("\tjupyter_port ENDED!")
             child.close(force=True)
             break
 
     if jupyter_last_port == "no_ports":
         logger(user=euid, message='\tNO RUNNING JUPYTER NOTEBOOK', level='WARNING')
-        print("\tNO RUNNING JUPYTER NOTEBOOK")
-
     return is_user, is_jupyter_config, jupyter_sha, jupyter_last_port
 
 
-""" START JUPYTER INSTANCE """
-
-
 def run_jupyter(euid, passw, addrs, timeout=5):
-    # START JUPYTER NOTEBOOK IN BACKGROUND PROCESS
+    """Start jupyter noteook on HPC in local VM background process.
+
+    Args:
+        euid: User id.
+        passw: Password for login to HPC.
+        addrs: Hostname of HPC.
+        timeout: Seconds until end session.
+    """
+
     logger(user=euid, message='STARTING JUPYTER NOTEBOOK', level='INFO')
-    print("STARTING JUPYTER NOTEBOOK")
     child = pexpect.spawn("ssh %s@%s -o StrictHostKeyChecking=no \"/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter lab --no-browser --ip=0.0.0.0\" &" %
                           (euid, addrs), encoding='utf-8', timeout=timeout, logfile=None)
     child.expect(['password: '])
@@ -415,22 +461,29 @@ def run_jupyter(euid, passw, addrs, timeout=5):
             # print("out_line", out_line)
         except:
             logger(user=euid, message='\tRUNNING JUPYTER NOTEBOOK', level='INFO')
-            print("\tRUNNING JUPYTER NOTEBOOK")
             child.close(force=True)
             break
     return
 
 
-""" FORWARD PORT """
-
-
 def forward_port(euid, passw, addrs, remote_port, local_port, running_pid, timeout=5):
-    # WITH A RUNNING JUPYTER INSTANCE ON A KNOWN PORT:
-    # - FORWARD KNOWN PORT TO GATEWAY
-    # - LOGIN IS SUCCESSFULL
-    # - LOGIN FAILED
+    """Forward port of running instance from HPC to local VM.
+    WITH A RUNNING JUPYTER INSTANCE ON A KNOWN PORT:
+        - FORWARD KNOWN PORT TO GATEWAY
+        - LOGIN IS SUCCESSFULL
+        - LOGIN FAILED
+
+    Args:
+        euid: User id.
+        passw: Password for login to HPC.
+        addrs: Hostname of HPC.
+        local_port: Port on local VM gateway used to forward.
+        talon_port: Port on HPC needed to forward.
+        running_pid: Pid of running process that does ssh tunneling.
+        timeout: Seconds until end session.
+    """
+
     logger(user=euid, message='FORWARD RUNNING JUPYTER INSTANCE PORT', level='INFO')
-    print("FORWARD RUNNING JUPYTER INSTANCE PORT")
     child = pexpect.spawn('ssh -L 0.0.0.0:%s:127.0.0.1:%s  %s@%s -o StrictHostKeyChecking=no' %
                           (local_port, remote_port, euid, addrs), encoding='utf-8', timeout=timeout, logfile=None)
     child.expect(['password: '])
@@ -453,7 +506,6 @@ def forward_port(euid, passw, addrs, remote_port, local_port, running_pid, timeo
             if ("Last login:" in out_line) and first_line:
                 is_logged = True
                 logger(user=euid, message='\tLOGIN IS SUCCESSFULL! FORWARDING...', level='CRITICAL')
-                print("\tLOGIN IS SUCCESSFULL! FORWARDING...")
                 # UPDATE USER DATABASE
                 add_db( db_name=DB_NAME,
                         euid = euid,
@@ -467,7 +519,6 @@ def forward_port(euid, passw, addrs, remote_port, local_port, running_pid, timeo
             # LOGIN FAILED
             if ("Last login:" not in out_line) and first_line and not is_logged:
                 logger(user=euid, message='\tLOGIN FAILED!', level='ERROR')
-                print("\tLOGIN FAILED!")
                 # UPDATE USER DATABASE
                 add_db( db_name=DB_NAME,
                         euid = euid,
@@ -482,7 +533,6 @@ def forward_port(euid, passw, addrs, remote_port, local_port, running_pid, timeo
 
         except:
             logger(user=euid, message='\tforward_port ENDED', level='WARNING')
-            print("\tforward_port ENDED")
             # UPDATE USER INFO
             add_db( db_name=DB_NAME,
                     euid = euid,
@@ -496,26 +546,30 @@ def forward_port(euid, passw, addrs, remote_port, local_port, running_pid, timeo
             break
     return
 
-
-""" CHECK USER ON TALON AND FORWARD PORT OF JUPYTER INSTANCE """
-
-
 def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
-    pid_session = os.getpid()
+    """Functions wrapper to check if user exists on HPC and forward
+        any running jupyter instance port.
 
+    Args:
+        conn: Multi-process connection.
+        _euid: User id.
+        _pass: Password for login to HPC.
+        hostname: Hostname of HPC.
+        session_timeout: Seconds until end session.
+    """
+
+    pid_session = os.getpid()
     is_user, is_jupyter_config, jupyter_sha, jupyter_last_port = jupyter_port(
         euid=_euid, passw=_pass, addrs=hostname, running_pid=pid_session, timeout=5)
 
     if is_user and is_jupyter_config and jupyter_last_port == "no_ports":
         logger(user=_euid, message='NO PORTS FOUND! START JUPYTER INSTANCE', level='WARNING')
-        print("NO PORTS FOUND! START JUPYTER INSTANCE")
         run_jupyter(euid=_euid, passw=_pass, addrs=hostname, timeout=5)
         _, _, _, jupyter_last_port = jupyter_port(
             euid=_euid, passw=_pass, running_pid=pid_session, addrs=hostname, timeout=5)
 
         if jupyter_last_port and (jupyter_last_port != "no_ports"):
             logger(user=_euid, message='FORWARD PORT', level='INFO')
-            print("FORWARD PORT")
             # send message
             random_local_port = find_free_port()
             send_line = "running %s %s %s" % (jupyter_last_port, random_local_port, pid_session)
@@ -526,7 +580,6 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
 
     elif jupyter_last_port and (jupyter_last_port != "no_ports"):
         logger(user=_euid, message='FORWARD PORT', level='INFO')
-        print("FORWARD PORT")
         # send message
         random_local_port = find_free_port()
         send_line = "running %s %s %s" % (jupyter_last_port, random_local_port, pid_session)
@@ -537,7 +590,6 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
 
     else:
         logger(user=_euid, message='COMPLETE FAIL!', level='ERROR')
-        print("COMPLETE FAIL!")
         # send message
         send_line = "ended %s %s" % (jupyter_last_port, pid_session)
         conn.send(send_line)
@@ -545,20 +597,22 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
     return
 
 
-# create the application object
+# create the Flask application object
 app = Flask(__name__)
 
 # use decorators to link the function to a url
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    '''
+    '''Home page used to login. Retrieve user and pass with @app.route methods.
+    Steps to follow:
         - CHECK IF USER WAS EVER LOGGED IN. IF NOT START USER FROM SCRATCH.
-        ADD USER IN DATABASE WITH RUNNING INSTANCE.
+        - ADD USER IN DATABASE WITH RUNNING INSTANCE.
         - FOR RETURNING USER CHECK THE INSTANCE STATUS.
-        FOR INITIATED INSTANCES AVOID RE-RUNNING PROCESSES.
-        KEEP CHECKING STATE FOR 1 MINUT. IF NO CHANGE CONSIDER INSTANCE ENDED AND RE-START.
-        IF STATE CHANGES - RE-FRESH CONNECITON FROM GATEWAY TO TALON.
+        - FOR INITIATED INSTANCES AVOID RE-RUNNING PROCESSES.
+        - KEEP CHECKING STATE FOR 1 MINUT. IF NO CHANGE CONSIDER INSTANCE ENDED AND RE-START.
+        - IF STATE CHANGES - RE-FRESH CONNECITON FROM GATEWAY TO TALON.
     '''
+
     error = None
     if request.method == 'POST':
         use = request.form['username']
@@ -619,7 +673,6 @@ def home():
                         login_node = LOGIN_NODE,
                         pid_session = pid_session,
                         state_session = state_session)
-                # return render_template('login.html', ide_link=ide_link, ide_password="Your Talon Password")
                 time.sleep(5)
                 logger(user=use, message='connection is successfull - forward to jupyter', level='INFO')
                 return redirect(ide_link)
@@ -631,17 +684,6 @@ def home():
             error = 'Login Already Initiated!'
             logger(user=use, message=error, level='WARNING')
             return render_template('login.html', error=error)
-        # # CHECK STATE OF EUID
-        #     # JUPYTER INITIATED - MAKE USER WAIT UNTIL CHANGE STATE
-        #     for _ in range(3):
-        #         # WAIT 20 SECONDS BEFORE LOOKING AGAIN AT STATE
-        #         time.sleep(20)
-        #         euid_log = from_db(db_name=DB_NAME, euid=use)
-        #         if euid_log['state_session'] != 'initiated':
-        #             # STATE CHANGED - TRY START SESSION
-        #             break
-        #     # CHECK SATE AGAIN FOR CHANGES
-        #     euid_log = from_db(db_name=DB_NAME, euid=use)
 
         elif (euid_log['state_session'] == 'running') or (euid_log['state_session'] == 'ended'):
             # RUN JUPYTER SEQUENCE:
@@ -694,20 +736,8 @@ def home():
                 logger(user=use, message='connection is successfull - forward to jupyter', level='INFO')
                 return redirect(ide_link)
 
-        # else:
-        #     print('FORCE KILL INSTANCE - WAITING TOO LONG')
-        #     # KILL PREVIOUS PID
-        #     kill_pid(pid=euid_log['pid_session'])
-        #     state_session = 'ended'
-        #     error = 'Something went wrong!'
-        #     return render_template('login.html', error=error)
-
-
-
     return render_template('login.html', login='login')
 
-
-# start the server with the 'run()' method
 if __name__ == '__main__':
     # CHECK LOGS FOLDER
     # CHECK DB
