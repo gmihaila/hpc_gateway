@@ -1,0 +1,19 @@
+{
+  "logger": {
+    "title": "Remote Sync"
+  },
+  "transport": "scp",
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "hpc-gateway.hpc.unt.edu",
+  "port": "22",
+  "target": "/home/george/hpc_gateway",
+  "ignore": [
+    "logs.log",
+    "jupyter_talon_usage.db"
+  ],
+  "username": "george",
+  "password": "george",
+  "watch": []
+}

@@ -9,6 +9,11 @@ Automate process of ssh tunneling and port forwarding from HPC cluster to a publ
 * Enforces timeout jupyter notebook session [can be customizable].
 * Generates random available ports to forward the HPC session.
 
+## To view Database from outside:
+
+`python
+$ sqlite_web -H 0.0.0.0 database_name.db
+`
 
 ## [Automation of shh tunneling Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab)
 * in progress
