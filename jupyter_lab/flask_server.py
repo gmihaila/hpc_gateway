@@ -579,6 +579,7 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
     """
 
     pid_session = os.getpid()
+    random_local_port = find_free_port()
     is_user, is_jupyter_config, jupyter_sha, jupyter_last_port = jupyter_port(
         euid=_euid, passw=_pass, addrs=hostname, running_pid=pid_session, timeout=5)
 
@@ -592,7 +593,6 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
         if jupyter_last_port and (jupyter_last_port != "no_ports"):
             logger(user=_euid, message='FORWARD PORT', level='INFO')
             # send message
-            random_local_port = find_free_port()
             send_line = "running %s %s %s" % (
                 jupyter_last_port, random_local_port, pid_session)
             conn.send(send_line)
@@ -603,7 +603,6 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
     elif jupyter_last_port and (jupyter_last_port != "no_ports"):
         logger(user=_euid, message='FORWARD PORT', level='INFO')
         # send message
-        random_local_port = find_free_port()
         send_line = "running %s %s %s" % (
             jupyter_last_port, random_local_port, pid_session)
         conn.send(send_line)
@@ -614,7 +613,7 @@ def jupyter_instance(conn, _euid, _pass, hostname, session_timeout):
     else:
         logger(user=_euid, message='COMPLETE FAIL!', level='ERROR')
         # send message
-        send_line = "ended %s %s" % (jupyter_last_port, pid_session)
+        send_line = "ended %s %s %s" % (jupyter_last_port, random_local_port, pid_session)
         conn.send(send_line)
         conn.close()
     return
