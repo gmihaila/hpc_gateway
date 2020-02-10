@@ -25,4 +25,4 @@ Automate process of ssh tunneling and port forwarding from HPC cluster to a publ
 </br>
 All code is indented using 
 
-`autopep8 -i *.py`
+`$ autopep8 -i *.py`
