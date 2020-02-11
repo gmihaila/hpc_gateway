@@ -264,9 +264,6 @@ def from_db(db_name, euid):
     return row
 
 
-"""CHECK IF ANY RUNNING JUPYTER and HASH AND JUPYTER CONFIG [ELSE CREATE] AND USER EXISTS"""
-
-
 def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
     """Jupyter configure and checking running instances.
     This function executes following procedures:
@@ -321,10 +318,14 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
     child.sendline(passw)
 
     # SHELL COMMANDS
-    shell_jupyter_config_path = "python -c \"import os; print('jupyter_config: ',os.path.exists('/home/%s/.jupyter/jupyter_notebook_config.json'))\"" % (
-        euid)
-    shell_jupyter_config_sha = "awk -F\": \" '/\"password\": /{print $2;}' /home/%s/.jupyter/jupyter_notebook_config.json" % (
-        euid)
+    shell_change_path = "cd /storage/scratch2/%s"%(euid)
+    shell_ipy_dir = "export IPYTHONDIR=/storage/scratch2/%s/.ipython"%(euid)
+    shell_jupyter_config_dir = "export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%(euid)
+    shell_jupyter_data_dir = "export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(euid)
+    shell_jupyter_generate_config = "/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter notebook --generate-config -y"
+
+    shell_jupyter_config_path = "python -c \"import os; print('jupyter_config: ',os.path.exists('/storage/scratch2/%s/.jupyter/jupyter_notebook_config.json'))\""%(euid)
+    shell_jupyter_config_sha = "awk -F\": \" '/\"password\": /{print $2;}' /storage/scratch2/%s/.jupyter/jupyter_notebook_config.json"%(euid)
     shell_jupyter_running = "/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter notebook list"
 
     # STAUS VARIABLES
@@ -361,6 +362,14 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
                 # USER EXISTS
                 is_user = True
                 logger(user=euid, message='\tUSER EXISTS', level='INFO')
+                # CHANGE PATH
+                child.sendline(shell_change_path)
+                # ADD ENVIROMENT VARIABLES
+                child.sendline(shell_ipy_dir)
+                child.sendline(shell_jupyter_config_dir)
+                child.sendline(shell_jupyter_data_dir)
+                # JUPYTER GENERATE CONFIG
+                child.sendline(shell_jupyter_generate_config)
                 # CHECK IF jupyter_notebook_config.json EXISTS
                 child.sendline(shell_jupyter_config_path)
 
@@ -456,7 +465,7 @@ def jupyter_port(euid, passw, addrs, running_pid, timeout=5):
     return is_user, is_jupyter_config, jupyter_sha, jupyter_last_port
 
 
-def run_jupyter(euid, passw, addrs, timeout=5):
+def run_jupyter(euid, passw, addrs, timeout=10):
     """Start jupyter noteook on HPC in local VM background process.
 
     Args:
@@ -465,10 +474,19 @@ def run_jupyter(euid, passw, addrs, timeout=5):
         addrs: Hostname of HPC.
         timeout: Seconds until end session.
     """
+    shell_change_path = "cd /storage/scratch2/%s"%(euid)
+    shell_ipy_dir = "export IPYTHONDIR=/storage/scratch2/%s/.ipython"%(euid)
+    shell_jupyter_config_dir = "export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%(euid)
+    shell_jupyter_data_dir = "export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(euid)
 
     logger(user=euid, message='STARTING JUPYTER NOTEBOOK', level='INFO')
-    child = pexpect.spawn("ssh %s@%s -o StrictHostKeyChecking=no \"/cm/shared/utils/PYTHON/ANACONDA/5.2/bin/jupyter lab --no-browser --ip=0.0.0.0\" &" %
-                          (euid, addrs), encoding='utf-8', timeout=timeout, logfile=None)
+    child = pexpect.spawn("ssh %s@%s -o StrictHostKeyChecking=no \"cd %s && export %s && export %s && export %s && jupyter lab --no-browser --ip=0.0.0.0\" &"%
+                        (euid,
+                        addrs,
+                        shell_change_path,
+                        shell_ipy_dir,
+                        shell_jupyter_config_dir,
+                        shell_jupyter_data_dir), encoding='utf-8', timeout=timeout, logfile=None)
     child.expect(['password: '])
     child.sendline(passw)
     # LOOP CHECK SHELL
@@ -476,6 +494,7 @@ def run_jupyter(euid, passw, addrs, timeout=5):
         try:
             child.expect('\n')
             out_line = child.before
+            logger(user=euid, message='STARTING JUPYTER NOTEBOOK: %s'%out_line, level='INFO', verbose=False)
             # print("out_line", out_line)
         except:
             logger(user=euid, message='\tRUNNING JUPYTER NOTEBOOK', level='INFO')
