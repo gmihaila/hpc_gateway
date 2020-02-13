@@ -116,10 +116,10 @@ def jupyter_forward(euid, passw, addrs, remote_port, local_port, running_pid, ti
                 # CHANGE PATH
                 child.sendline("cd /storage/scratch2/%s"%euid)
                 # ADD ENVIROMENT VARIABLES
-                child.sendline('export PATH="$PATH:%s/bin"'%PYTHON_PATH)
-                child.sendline('export PATH="$PATH:%s/lib"'%PYTHON_PATH)
                 child.sendline('export PATH="$PATH:%s/bin"'%CONDA_PATH)
                 child.sendline('export PATH="$PATH:%s/lib"'%CONDA_PATH)
+                child.sendline('export PATH="$PATH:%s/bin"'%PYTHON_PATH)
+                child.sendline('export PATH="$PATH:%s/lib"'%PYTHON_PATH)
                 child.sendline("export IPYTHONDIR=/storage/scratch2/%s/.ipython"%euid)
                 child.sendline("export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%euid)
                 child.sendline("export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%euid)
@@ -194,6 +194,7 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
     """
 
     # GET REMOTE PORT FROM USER DB [IF OTHER USER IS USING IT RETURN None]
+    # IF NEVER HAD A PORT MAKE IT None
     remote_port = None
 
     logger(user=euid, message='CHECK IF ANY RUNNING JUPYTER and HASH AND JUPYTER CONFIG', level='INFO')
@@ -215,8 +216,8 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
 
     shell_jupyter_config_path = "python -c \"import os; print('jupyter_config: ',os.path.exists('/storage/scratch2/%s/.jupyter/jupyter_notebook_config.json'))\""%(euid)
     shell_jupyter_config_sha = "awk -F\": \" '/\"password\": /{print $2;}' /storage/scratch2/%s/.jupyter/jupyter_notebook_config.json"%(euid)
-    shell_jupyter_ports = "python -c 'import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); print(\"port_used\",s.connect_ex((\"localhost\", %s)) == 0)'"%(remote_port)
-
+    shell_check_port = "python -c 'import socket; s = socket.socket(socket.AF_INET, socket.SOCK_STREAM); print(\"port_used\",s.connect_ex((\"localhost\", %s)) == 0)'"%(remote_port)
+    shell_new_port = ""
     # STAUS VARIABLES
     jupyter_last_port = None
 
@@ -234,6 +235,12 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
     cull_interval = "sed -i 's/#c.MappingKernelManager.cull_interval = 300/c.MappingKernelManager.cull_interval = 5/g' .jupyter/jupyter_notebook_config.py"
     kernel_info_timeout = "sed -i 's/#c.MappingKernelManager.kernel_info_timeout = 60/c.MappingKernelManager.kernel_info_timeout = 60/g' .jupyter/jupyter_notebook_config.py"
     shutdown_no_activity_timeout = "sed -i 's/#c.NotebookApp.shutdown_no_activity_timeout = 0/c.NotebookApp.shutdown_no_activity_timeout = %s/g' .jupyter/jupyter_notebook_config.py"%JUPYTER_HPC_TIMEOUT
+    notebook_dir = "sed -i \"s/#c.NotebookApp.notebook_dir = ''/c.NotebookApp.notebook_dir = '\\/storage\\/scratch2\\/%s\\/.jupyter'/g\" .jupyter/jupyter_notebook_config.py"%(euid)
+    map_root_dir = "sed -i \"s/#c.MappingKernelManager.root_dir = ''/c.MappingKernelManager.root_dir = '\\/storage\\/scratch2\\/%s\\/.ipython'/g\" .jupyter/jupyter_notebook_config.py"%(euid)
+    content_root_dir = "sed -i \"s/#c.ContentsManager.root_dir = '\\/'/c.ContentsManager.root_dir = '\\/storage\\/scratch2\\/%s'/g\" .jupyter/jupyter_notebook_config.py"%(euid)
+    iopub_data_rate_limit = "sed -i 's/#c.NotebookApp.iopub_data_rate_limit = 1000000/c.NotebookApp.iopub_data_rate_limit = 1e10/g' .jupyter/jupyter_notebook_config.py"
+    mathjax_config = "sed -i \"s/#c.NotebookApp.mathjax_config = 'TeX-AMS-MML_HTMLorMML-full,Safe'/c.NotebookApp.mathjax_config = 'TeX-AMS-MML_HTMLorMML-full,Safe'/g\" .jupyter/jupyter_notebook_config.py"
+
 
     # LOOP CHECK SHELL
     while True:
@@ -264,6 +271,8 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
                 # child.sendline('rm  .jupyter')
                 # JUPYTER GENERATE CONFIG .jupyter
                 child.sendline("jupyter notebook --generate-config -y")
+                # CREATE .ipyton if not created
+                child.sendline('mkdir -p .ipython')
                 logger(user=euid, message='TRY TO CREATE jupyter_notebook_config.py', level='INFO')
                 # CHECK IF jupyter_notebook_config.json CREATED with
                 child.sendline(shell_jupyter_config_path)
@@ -286,17 +295,21 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
                 logger(user=euid, message='JUPYTER PASSWORD IS SET!', level='CRITICAL')
                 # ALLOW REMOTE ACCESS
                 child.sendline(allow_remote_access)
-                # TIMEOUT KILL NOTEBOOK
+                # CONFIG FILE jupyter_config.py
                 child.sendline(cull_busy)
                 child.sendline(cull_connected)
                 child.sendline(cull_idle_timeout)
                 child.sendline(cull_interval)
                 child.sendline(kernel_info_timeout)
                 child.sendline(shutdown_no_activity_timeout)
+                child.sendline(notebook_dir)
+                child.sendline(map_root_dir)
+                child.sendline(content_root_dir)
+                child.sendline(iopub_data_rate_limit)
+                child.sendline(mathjax_config)
                 logger(user=euid, message='CONFIGURED jupyter_notebook_config.py!', level='CRITICAL')
-                # CHECK IF PORT IS BEING USED
-                if remote_port is not None:
-                    child.sendline(shell_jupyter_ports)
+                # GRAB LAST PORT OF RUNNING NOTEBOOK IF EXISTS
+
 
             # CHECK IF JUPYTER CONFIG NOT EXISTS. KNOW THAT USER EXISTS.
             if ("('jupyter_config: ', False)" in out_line) and is_user:
@@ -306,15 +319,6 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
                 child.close(force=True)
                 break
 
-            # CHECK IF PORT IS BEING USED
-            if ('port_used' in out_line):
-                if 'True' in out_line:
-                    jupyter_last_port = remote_port
-                    logger(user=euid, message="JUPYTER LAST PORT USED '%s'!"%jupyter_last_port,level='INFO')
-                    break
-                elif 'False' in out_line:
-                    # FIND NEW PORT ON TALON
-## ------HEREEEE----
 
         except:
             logger(user=euid, message='FUNCTION ENDED!', level='WARNING')
@@ -328,6 +332,6 @@ def jupyter_configure(euid, passw, addrs, running_pid, timeout=5):
 
 
 if __name__ == '__main__':
-    is_user, is_jupyter_config, jupyter_last_port = jupyter_configure(euid='gm0234', passw='', addrs=LOGIN_NODE, remote_port='39634', running_pid=2, timeout=5)
+    is_user, is_jupyter_config, jupyter_last_port = jupyter_configure(euid='gm0234', passw='', addrs=LOGIN_NODE, running_pid=2, timeout=5)
     print(is_user, is_jupyter_config, jupyter_last_port)
     # forward_new_jupyter(euid='gm0234', passw='', addrs=LOGIN_NODE, remote_port='39634', local_port='39634', running_pid='0', timeout=10)
