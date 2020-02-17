@@ -2,3 +2,4 @@
 jupyter_talon_usage.db
 logs/
 logs.log
+__pycache__/
