@@ -277,7 +277,7 @@ class JupyterLab(object):
                     child.sendline("export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
                     if running_instance is False:
                         # NEED NEW JUPYTER INSTANCE [MAKE SURE TO KEEP WATCHING OUTPUT]
-                        child.sendline("nohup %s lab --no-browser --ip=0.0.0.0 --port=%s & tail -f nohup.out"%(self.jupyter_bin_path, remote_port))
+                        child.sendline("nohup %s lab --no-browser --ip=0.0.0.0 --port=%s &> .jupyter_lab.log & tail -f .jupyter_lab.log"%(self.jupyter_bin_path, remote_port))
 
                 # JUPYTER PORT FORWARDED
                 if (running_instance is True) and (is_logged is True):
