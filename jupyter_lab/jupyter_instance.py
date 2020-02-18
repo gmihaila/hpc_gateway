@@ -203,11 +203,11 @@ class JupyterLab(object):
             except:
                 logger(user=self.user, message='jupyter_port %s' %
                        jupyter_port, level='CRITICAL')
-                logger(user=self.user, message='FUNCTION ENDED!', level='WARNING')
+                logger(user=self.user, message="FUNCTION 'configure()' ENDED!", level='WARNING')
                 child.close(force=True)
                 break
 
-        if jupyter_port == "no_ports":
+        if jupyter_port is None:
             logger(user=self.user, message='NO RUNNING JUPYTER NOTEBOOK', level='WARNING')
         return is_user, running_jupyter, jupyter_port
 
@@ -230,7 +230,7 @@ class JupyterLab(object):
             remote_port = int(remote_port)
         except:
             logger(user=self.user, message='INVALID REMOTE PORT!', level='ERROR')
-            logger(user=self.user, message='forward_port ENDED!', level='ERROR')
+            logger(user=self.user, message="FUNCTION 'forward()' ENDED!", level='ERROR')
             # UPDATE USER IN DATABASE
             add_db(db_name=DATABASE_NAME,
                    user=self.user,
@@ -264,7 +264,7 @@ class JupyterLab(object):
                 # LOGIN IS SUCCESSFULL
                 if ("Last login:" in out_line) and first_line:
                     is_logged = True
-                    logger(user=self.user, message='LOGIN IS TO HPC SUCCESSFULL! START JUPYTER...', level='CRITICAL')
+                    logger(user=self.user, message='LOGIN TO HPC SUCCESSFULL! STARTING JUPYTER...', level='CRITICAL')
                     # CHANGE PATH
                     child.sendline("cd /storage/scratch2/%s"%(self.user))
                     # ADD ENVIROMENT VARIABLES
@@ -276,8 +276,8 @@ class JupyterLab(object):
                     child.sendline("export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
                     child.sendline("export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
                     if running_instance is False:
-                        # NEED NEW JUPYTER INSTANCE
-                        child.sendline("nohup %s lab --no-browser --ip=0.0.0.0 --port=%s &"%(self.jupyter_bin_path, remote_port))
+                        # NEED NEW JUPYTER INSTANCE [MAKE SURE TO KEEP WATCHING OUTPUT]
+                        child.sendline("nohup %s lab --no-browser --ip=0.0.0.0 --port=%s & tail -f nohup.out"%(self.jupyter_bin_path, remote_port))
 
                 # JUPYTER PORT FORWARDED
                 if (running_instance is True) and (is_logged is True):
@@ -373,13 +373,28 @@ def jupyter_run(conn, user, credential, hostname, conda_pah, python_path, jupyte
     user_exists, running_jupyter, jupyter_port = jupyter_instance.configure()
 
     if user_exists is True:
-        # GRAB FREE LOCAL PORT
-        free_port = find_free_port()
-        # SEND MESSAGE TO MASTER PROCESS
-        conn.send('running %s'%free_port)
-        conn.close()
-        # FORWARD JUPYTER INSTANCE
-        jupyter_instance.forward(local_port=free_port, remote_port=jupyter_port, running_instance=running_jupyter)
+        if jupyter_port is not None:
+            # GRAB FREE LOCAL PORT
+            free_port = find_free_port()
+            # SEND MESSAGE TO MASTER PROCESS
+            conn.send('running %s'%free_port)
+            conn.close()
+            # FORWARD JUPYTER INSTANCE
+            jupyter_instance.forward(local_port=free_port, remote_port=jupyter_port, running_instance=running_jupyter)
+        else:
+            logger(user=user, message='USER %s GOT UNEXPECTED ERROR!'%user, level='ERROR')
+            # UPDATE USER IN DATABASE
+            add_db(db_name=DATABASE_NAME,
+                   user=user,
+                   last_login=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                   local_port=0,
+                   talon_port=0,
+                   login_node=hostname,
+                   pid_session=0,
+                   state_session='ended')
+            # SEND MESSAGE TO MASTER PROCESS
+            conn.send('ended None')
+            conn.close()
 
     else:
         logger(user=user, message='USER %s DOES NOT EXIST!'%user, level='ERROR')

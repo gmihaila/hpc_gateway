@@ -75,9 +75,14 @@ def home():
 
             # CHECK SESSION STATE
             if state_session == 'ended':
-                # CONNECTION FAILED
-                logger(user=user_id, message='INVALID CREDENTIAL', level='ERROR')
-                return render_template('login.html', error='Invalid Credentials. Please try again.')
+                if jupyter_port == 'None':
+                    # CONNECTION FAILED
+                    logger(user=user_id, message='SERVER ERROR!', level='ERROR')
+                    return render_template('login.html', error='Server error! Please report to HPC-Admin!')
+                else:
+                    # CONNECTION FAILED
+                    logger(user=user_id, message='INVALID CREDENTIAL', level='ERROR')
+                    return render_template('login.html', error='Invalid Credentials. Please try again.')
             else:
                 # CONNECTION SUCCESSFULL
                 ide_link = "http://hpc-gateway.hpc.unt.edu:%s"%(jupyter_port)
@@ -125,9 +130,14 @@ def home():
 
             # CHECK SESSION STATE
             if state_session == 'ended':
-                # CONNECTION FAILED
-                logger(user=user_id, message='INVALID CREDENTIAL', level='ERROR')
-                return render_template('login.html', error='Invalid Credentials. Please try again.')
+                if jupyter_port == 'None':
+                    # CONNECTION FAILED
+                    logger(user=user_id, message='SERVER ERROR!', level='ERROR')
+                    return render_template('login.html', error='Server error! Please report to HPC-Admin!')
+                else:
+                    # CONNECTION FAILED
+                    logger(user=user_id, message='INVALID CREDENTIAL', level='ERROR')
+                    return render_template('login.html', error='Invalid Credentials. Please try again.')
             else:
                 # CONNECTION SUCCESSFULL
                 ide_link = "http://hpc-gateway.hpc.unt.edu:%s"%(jupyter_port)
