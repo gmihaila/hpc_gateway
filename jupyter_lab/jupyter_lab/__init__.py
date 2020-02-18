@@ -13,12 +13,12 @@ from flask import Flask
 from sqlite_database import create_db
 
 # ENVIROMENT VARIABLES
-DATABASE_NAME = os.environ['DATABASE_NAME']
-HOSTNAME = os.environ['HOSTNAME']
-CONDA_PATH = os.environ['CONDA_PATH']
-PYTHON_PATH = os.environ['PYTHON_PATH']
-JUPYTER_BIN_PATH = os.environ['JUPYTER_BIN_PATH']
-SESSION_LENGTH = os.environ['SESSION_LENGTH']
+DATABASE_NAME = 'database_jupyter_lab.db'   #os.environ['DATABASE_NAME']
+HOSTNAME = 'vis.acs.unt.edu'    #os.environ['HOSTNAME']
+CONDA_PATH = '/cm/shared/utils/PYTHON/ANACONDA/5.2' #os.environ['CONDA_PATH']
+PYTHON_PATH = '/cm/shared/utils/PYTHON/3.6.5'   #os.environ['PYTHON_PATH']
+JUPYTER_BIN_PATH = '/cm/shared/utils/PYTHON/3.6.5/bin/jupyter'  #os.environ['JUPYTER_BIN_PATH']
+SESSION_LENGTH = 60 #os.environ['SESSION_LENGTH']
 
 # CHECK DATABASE
 if create_db(db_name=DATABASE_NAME):

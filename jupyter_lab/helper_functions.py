@@ -46,7 +46,7 @@ def find_free_port():
         return available_port
 
 
-def logger(user, message, level, fname='logs.log', verbose=True, extra_log=True):
+def logger(user, message, level, fname='logs_jupyter_app', verbose=True, extra_log=True):
     """Logging function
 
     Args:
