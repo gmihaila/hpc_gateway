@@ -40,14 +40,14 @@
     $ sudo vim /etc/supervisord.conf
     ```
 
-  Scroll to the very end of the file and look for the lines:
+    Scroll to the very end of the file and look for the lines:
 
     ```bash
     ;[include]
     ;files = relative/directory/*.ini
     ```
 
-  We want to uncomment (remove the semicolon), and update these lines to use the directory we just created:
+    We want to uncomment (remove the semicolon), and update these lines to use the directory we just created:
 
     ```bash
     [include]
@@ -61,7 +61,7 @@
     $ sudo vim /lib/systemd/system/supervisord.service
     ```
 
-  Copy the the above onto your clipboard and paste it into our new service file:
+    Copy the the above onto your clipboard and paste it into our new service file:
 
     ```bash
     # supervisord service for systemd
@@ -81,7 +81,7 @@
     [Install]
     WantedBy=multi-user.target
     ```
-  Finally we can load and start the service:
+    Finally we can load and start the service:
 
     ```bash
     $ sudo systemctl daemon-reload
@@ -89,10 +89,10 @@
     $ sudo systemctl start supervisord.service
     ```
 
-  If everything has gone according to plan then great! If not, check the output of `$ sudo journalctrl -xe` for hints on what's gone wrong ... and fix it!
+    If everything has gone according to plan then great! If not, check the output of `$ sudo journalctrl -xe` for hints on what's gone wrong ... and fix it!
 
   * Connect & Test
-  Start by connecting to Supervisor using the command:
+    Start by connecting to Supervisor using the command:
 
     ```bash
     sudo supervisorctl
