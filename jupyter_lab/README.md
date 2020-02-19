@@ -97,3 +97,19 @@
     ```bash
     sudo supervisorctl
     ```
+
+  * Supervisor Program
+
+    Supervisor jobs or processes are referred to as Programs and are defined using a simple syntax either in the main Supervisor config file or via individual files.
+
+    Let's make a new file in our /etc/supervisor.d/ directory so we can load it:
+
+    ```bash
+    $ sudo vim /etc/supervisor.d/jupyter_lab.ini
+    ```
+
+    Jump back into `supervisorctl` (don't forget to sudo).
+
+    We need to run a couple of commands in Supervisor. First we need to `reread` to load the new config file. Then we need to `add jupyter_lab` to add and start it.
+
+    Finally we'll check the `status` of the job.
