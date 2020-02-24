@@ -80,8 +80,7 @@
     Type=forking
     ExecStart=/usr/local/bin/supervisord
     ExecStop=/usr/local/bin/supervisorctl $OPTIONS shutdown
-    ExecReload=/usr/local/bin/supervisorctl $OPTIONS reload
-    KillMode=process
+    ExecReload=/usr/local/bin/supervisorctl $OPTIONS reload    KillMode=process
     Restart=on-failure
     RestartSec=42s
 
@@ -120,3 +119,7 @@
     We need to run a couple of commands in Supervisor. First we need to `reread` to load the new config file. Then we need to `add jupyter_lab` to add and start it.
 
     Finally we'll check the `status` of the job.
+    
+    
+    
+NOTE: If new user on ubuntu, create home dir and run `$ sudo chsh -s /bin/bash <username>`
