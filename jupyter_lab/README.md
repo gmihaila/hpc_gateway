@@ -1,16 +1,20 @@
 # Jupyter Lab Python Server
 
 
+
+## Debugging:
+  * Local debugging instance with NGINX running to proxy port 8000:
+  `$ flask run -h localhost -p 8000 --with-threads`
+
+  * Using Gunicorn:
+  `$ gunicorn -b localhost:8000 -w 1 jupyter_lab:app`
+
+  * Simple local debugging:
+  `$ flask run -h 0.0.0.0 --with-threads`
+
 ## Notes:
   * User side debugging:
     Check `.jupyter_lab.log` log file in jupyter running directory on HPC.
-
-  * Test Server:
-    Local debugging instance:
-    `$ flask run -h 0.0.0.0 --with-threads`
-
-    Using Gunicorn:
-    `$ gunicorn -b localhost:8000 -w 1 jupyter_lab:app`
 
 ## Deploy Flask App:
   * Used [this](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux) tutorial.
