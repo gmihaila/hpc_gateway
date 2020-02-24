@@ -140,7 +140,7 @@ def home():
                     return render_template('login.html', error='Invalid Credentials. Please try again.')
             else:
                 # CONNECTION SUCCESSFULL
-                ide_link = "http://hpc-gateway.hpc.unt.edu:%s"%(jupyter_port)
+                ide_link = "http://jupyterlab.hpc.unt.edu:%s"%(jupyter_port)
                 time.sleep(5)
                 logger(user=user_id, message='FORWARDING LOGIN PAGE TO JUPYTER LAB!', level='INFO')
                 return redirect(ide_link)
