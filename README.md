@@ -11,7 +11,7 @@ Automate process of ssh tunneling and port forwarding from HPC cluster to a publ
 
 ## To view Database [Sqlite-Web](https://github.com/coleifer/sqlite-web):
 
-`$ sqlite_web -H 0.0.0.0 database_name.db`
+`$ sqlite_web -H 0.0.0.0 database_jupyter_lab.db`
 
 ## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab)
 * in progress
