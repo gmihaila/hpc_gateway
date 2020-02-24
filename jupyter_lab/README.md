@@ -78,6 +78,19 @@
   To check NGINX:
   * Cgeck any errors that don't let NGINX start: `$ sudo nginx -t -c /etc/nginx/nginx.conf`
 
+## Setup Python Environment:
+  * Make sure python3 is installed.
+  * Install virtualenv:
+  ```
+  $ apt-get update
+  $ apt-get install python-virtualenv
+  ```
+  * Find path of python using `which python3`.
+  * Create environment:
+  ```
+  $ virtualenv -p path/to/python ~/flask_env
+  ```
+
 ## Setup [Supervisor](http://supervisord.org/):
   * Have the server running in the background, and have it under constant monitoring, because if for any reason the server crashes and exits, I want to make sure a new server is automatically started to take its place. And I also want to make sure that if the machine is rebooted, the server runs automatically upon startup, without me having to log in and start things up myself.
   * I used [this](https://rcwd.dev/long-lived-python-scripts-with-supervisor.html) and [this](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux) as guidance.
