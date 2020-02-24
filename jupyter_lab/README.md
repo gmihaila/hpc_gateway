@@ -92,8 +92,8 @@
   * Installing Supervisor:
 
     ```bash
-    $ pip install supervisor
-    $ echo_supervisord_conf > /etc/supervisord.conf
+    $ sudo apt install supervisor
+    [root]$ echo_supervisord_conf > /etc/supervisord.conf
     $ sudo mkdir /etc/supervisor.d
     $ sudo vim /etc/supervisord.conf
     ```
@@ -169,10 +169,10 @@
     And add following these lines:
 
     ```bash
-    [program:microblog]
-    command=/home/ubuntu/microblog/venv/bin/gunicorn -b localhost:8000 -w 4 microblog:app
-    directory=/home/ubuntu/microblog
-    user=ubuntu
+    [program:jupyter_lab]
+    command=~/flask_env/bin/gunicorn -b localhost:8000 -w 4 jupyter_lab:app
+    directory=~/hpc_gateway/jupyter_lab
+    user=your_user
     autostart=true
     autorestart=true
     stopasgroup=true
@@ -182,5 +182,24 @@
     Jump back into `supervisorctl` (don't forget to sudo).
 
     We need to run a couple of commands in Supervisor. First we need to `reread` to load the new config file. Then we need to `add jupyter_lab` to add and start it.
-
     Finally we'll check the `status` of the job.
+
+## How to Stop flask server:
+  * Login to VM and stop the jupyter_lab supervisor process:
+    ```
+    $ sudo supervisorctl
+    > stop jupyter_lab
+    > remove jupyter_lab
+    > exit
+    ```
+  * Perform any debugging / maintenance / git pull.
+  * When finished, start flask server.
+
+## Start flask server:
+  * Login to VM and start the supervisor process:
+  ```
+  $ sudo supervisorctl
+  > reread
+  > add jupyter_lab
+  > exit
+  ```
