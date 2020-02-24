@@ -12,13 +12,6 @@
     Using Gunicorn:
     `$ gunicorn -b localhost:8000 -w 1 jupyter_lab:app`
 
-
-## Setup python virtual environment:
-  * Regular python environment using `virtualenv`.
-  * Install needed libraries:
-    `$ pip install -r requirements.txt`
-
-
 ## Deploy Flask App:
   * Used [this](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvii-deployment-on-linux) tutorial.
 
@@ -76,7 +69,7 @@
   Get `jupyterlab_hpc_unt_edu_cert.cer` from email confirmation to download. The `jupyterlab_hpc_unt_edu.key` should be already on the server.
 
   To check NGINX:
-  * Cgeck any errors that don't let NGINX start: `$ sudo nginx -t -c /etc/nginx/nginx.conf`
+  * Check any errors that don't let NGINX start: `$ sudo nginx -t -c /etc/nginx/nginx.conf`
 
 ## Setup Python Environment:
   * Make sure python3 is installed.
@@ -89,6 +82,8 @@
   * Create environment:
   ```
   $ virtualenv -p path/to/python ~/flask_env
+  $ source ~/flask_env/bin/activate
+  $ pip install -r requirements.txt
   ```
 
 ## Setup [Supervisor](http://supervisord.org/):
