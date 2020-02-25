@@ -185,3 +185,31 @@ def from_db(db_name, user):
     except Exception as e:
         logger(user=user, message='from_db FAILED! %s' % str(e), level='ERROR')
     return row
+
+
+def get_ports(db_name):
+    """Extract all local_port that are being used.
+
+    Args:
+        db_name: Database name used to read.
+    Return:
+        ports: local_port from all users.
+    """
+    # CHECK IF DB EXISTS OR NOT
+    if os.path.isfile(db_name):
+        try:
+            # CONNECT TO DB
+            conn = sqlite3.connect(db_name)
+            # DB CONNECTION
+            c = conn.cursor()
+            # CHECK IF EUID EXISTS
+            ports = list(c.execute('SELECT local_port FROM jupyter_talon').fetchall())
+            return [port[0] for port in ports]
+
+        except Exception as e:
+            print("DB READ FAILED!", e)
+            return None
+
+    else:
+        print("DB %s DOES NOT EXIST!" % db_name)
+        return None

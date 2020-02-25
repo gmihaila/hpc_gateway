@@ -32,21 +32,32 @@ def kill_pid(pid):
         return False
 
 
-def find_free_port():
+def find_free_port(min_port=None, max_port=None):
     """Find available port
-
+    Arguments:
+        min_port: local port where to start looking
+        max_port: local port where to sop looking
     Return:
         available_port: Available random port. Int type.
     """
 
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        available_port = s.getsockname()[1]
-        return available_port
+    if min_port and max_port:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        for port in range(min_port,max_port,1):
+            try:
+                sock.bind(("0.0.0.0", port))
+                sock.close()
+                return port
+            except:
+                continue
+    else:
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.bind(('', 0))
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            return s.getsockname()[1]
 
 
-def logger(user, message, level, fname='logs_jupyter_app', verbose=True, extra_log=True):
+def logger(user, message, level, fname='logs_jupyter_lab', verbose=True, extra_log=True):
     """Logging function
 
     Args:
@@ -75,9 +86,9 @@ def logger(user, message, level, fname='logs_jupyter_app', verbose=True, extra_l
         f.write(line + '\n')
     if extra_log:
         # create if folder does not exist
-        if os.path.isdir('logs') is False:
-            os.mkdir('logs')
+        if os.path.isdir('users_logs') is False:
+            os.mkdir('users_logs')
         # append to user log file
-        with open('logs/%s.log' % user, 'a') as f:
+        with open('users_logs/%s.log' % user, 'a') as f:
             f.write(line + '\n')
     return

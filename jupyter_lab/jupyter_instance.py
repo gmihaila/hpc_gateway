@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 import pexpect
 
-from jupyter_lab import app, DATABASE_NAME
+from jupyter_lab import app, DATABASE_NAME, START_OPEN_PORT, END_OPEN_PORT
 from helper_functions import logger, find_free_port
 from sqlite_database import add_db
 
@@ -372,10 +372,11 @@ def jupyter_run(conn, user, credential, hostname, conda_pah, python_path, jupyte
     # CHECK CONFIGURATION
     user_exists, running_jupyter, jupyter_port = jupyter_instance.configure()
 
+    # GRAB FREE LOCAL PORT
+    free_port = find_free_port(min_port=START_OPEN_PORT, max_port=END_OPEN_PORT)
+
     if user_exists is True:
         if jupyter_port is not None:
-            # GRAB FREE LOCAL PORT
-            free_port = find_free_port()
             # SEND MESSAGE TO MASTER PROCESS
             conn.send('running %s'%free_port)
             conn.close()

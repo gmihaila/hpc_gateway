@@ -207,3 +207,37 @@
   > add jupyter_lab
   > exit
   ```
+
+## Firewall `ufw`:
+  * Install firewall if not already:
+  `$ sudo apt install ufw`
+  * Add http nginx aplicaiton to `ufw`:
+  `$ sudo vim /etc/ufw/applications.d/nginx-https`
+    And copy:
+    ```
+    [Nginx HTTP]
+    title=Web Server (HTTP)
+    description=for serving web
+    ports=80/tcp
+    ```
+  * Add https nginx aplicaiton to `ufw`:
+  `$ sudo vim /etc/ufw/applications.d/nginx-https`
+    And copy:
+    ```
+    [Nginx HTTPS]
+    title=Web Server (HTTPS)
+    description=for serving web
+    ports=443/tcp
+    ```
+  * Look for applications and allow them:
+    ```
+    $ sudo ufw app list
+    $ sudo ufw allow 'Nginx HTTP'
+    $ sudo ufw allow 'Nginx HTTPS'
+    ```
+
+  * Set range of open ports:
+    `$ sudo ufw allow 9000:10000/tcp`
+
+  * Allow port for database:
+    `$ sudo ufw allow 8080`
