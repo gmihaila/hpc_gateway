@@ -20,7 +20,7 @@ HOSTNAME = 'vis.acs.unt.edu'
 CONDA_PATH = '/cm/shared/utils/PYTHON/ANACONDA/5.2'
 PYTHON_PATH = '/cm/shared/utils/PYTHON/3.6.5'
 JUPYTER_BIN_PATH = '/cm/shared/utils/PYTHON/3.6.5/bin/jupyter'
-SESSION_LENGTH = 60
+SESSION_LENGTH = 7200 # 2 hours
 
 # CHECK DATABASE
 if create_db(db_name=DATABASE_NAME):

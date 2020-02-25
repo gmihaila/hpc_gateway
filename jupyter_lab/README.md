@@ -237,7 +237,7 @@
     ```
 
   * Set range of open ports:
-    `$ sudo ufw allow 9000:10000/tcp`
+    `$ sudo ufw allow 8999:10001/tcp`
 
   * Allow port for database:
     `$ sudo ufw allow 8080`
