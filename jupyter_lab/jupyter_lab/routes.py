@@ -12,7 +12,7 @@ from datetime import datetime
 from multiprocessing import Process, Pipe
 from flask import render_template, redirect, url_for, request
 # LOCAL IMPORTS
-from jupyter_lab import app, DATABASE_NAME, HOSTNAME, CONDA_PATH, PYTHON_PATH, JUPYTER_BIN_PATH, SESSION_LENGTH
+from jupyter_lab import app, DATABASE_NAME, HOSTNAME, PYTHON_PATH, JUPYTER_BIN_PATH, SESSION_LENGTH
 from helper_functions import logger,kill_pid
 from sqlite_database import from_db, add_db
 from jupyter_instance import jupyter_run
@@ -63,7 +63,6 @@ def home():
             python_process = Process(target=jupyter_run, args=(parent_conn,
                                                                 user_id, user_credential,
                                                                 HOSTNAME,
-                                                                CONDA_PATH,
                                                                 PYTHON_PATH,
                                                                 JUPYTER_BIN_PATH,
                                                                 SESSION_LENGTH))
@@ -85,7 +84,7 @@ def home():
                     return render_template('login.html', error='Invalid Credentials. Please try again.')
             else:
                 # CONNECTION SUCCESSFULL
-                ide_link = "http://hpc-gateway.hpc.unt.edu:%s"%(jupyter_port)
+                ide_link = "http://jupyterlab.hpc.unt.edu:%s"%(jupyter_port)
                 time.sleep(5)
                 logger(user=user_id, message='FORWARDING LOGIN PAGE TO JUPYTER LAB!', level='INFO')
                 return redirect(ide_link)
@@ -118,7 +117,6 @@ def home():
             python_process = Process(target=jupyter_run, args=(parent_conn,
                                                                 user_id, user_credential,
                                                                 HOSTNAME,
-                                                                CONDA_PATH,
                                                                 PYTHON_PATH,
                                                                 JUPYTER_BIN_PATH,
                                                                 SESSION_LENGTH))

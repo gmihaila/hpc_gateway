@@ -30,11 +30,10 @@ class JupyterLab(object):
         jupyter_port: Jupyter port, either last running instance or free port.
     """
 
-    def __init__(self, user, credential, hostname, conda_pah, python_path, jupyter_bin_path, pid, session_length):
+    def __init__(self, user, credential, hostname, python_path, jupyter_bin_path, pid, session_length):
         self.user = user
         self.credential = credential
         self.hostname = hostname
-        self.conda_pah = conda_pah
         self.python_path = python_path
         self.jupyter_bin_path = jupyter_bin_path
         self.pid = pid
@@ -89,7 +88,7 @@ class JupyterLab(object):
         kernel_info_timeout = "sed -i 's/#c.MappingKernelManager.kernel_info_timeout = 60/c.MappingKernelManager.kernel_info_timeout = 60/g' .jupyter/jupyter_notebook_config.py"
         shutdown_no_activity_timeout = "sed -i 's/#c.NotebookApp.shutdown_no_activity_timeout = 0/c.NotebookApp.shutdown_no_activity_timeout = %s/g' .jupyter/jupyter_notebook_config.py"%self.session_length
         notebook_dir = "sed -i \"s/#c.NotebookApp.notebook_dir = ''/c.NotebookApp.notebook_dir = '\\/storage\\/scratch2\\/%s\\/'/g\" .jupyter/jupyter_notebook_config.py"%(self.user)
-        map_root_dir = "sed -i \"s/#c.MappingKernelManager.root_dir = ''/c.MappingKernelManager.root_dir = '\\/storage\\/scratch2\\/%s\\/.ipython'/g\" .jupyter/jupyter_notebook_config.py"%(self.user)
+        map_root_dir = "sed -i \"s/#c.MappingKernelManager.root_dir = ''/c.MappingKernelManager.root_dir = '\\/storage\\/scratch2\\/%s'/g\" .jupyter/jupyter_notebook_config.py"%(self.user)
         content_root_dir = "sed -i \"s/#c.ContentsManager.root_dir = '\\/'/c.ContentsManager.root_dir = '\\/storage\\/scratch2\\/%s'/g\" .jupyter/jupyter_notebook_config.py"%(self.user)
         iopub_data_rate_limit = "sed -i 's/#c.NotebookApp.iopub_data_rate_limit = 1000000/c.NotebookApp.iopub_data_rate_limit = 1e10/g' .jupyter/jupyter_notebook_config.py"
         mathjax_config = "sed -i \"s/#c.NotebookApp.mathjax_config = 'TeX-AMS-MML_HTMLorMML-full,Safe'/c.NotebookApp.mathjax_config = 'TeX-AMS-MML_HTMLorMML-full,Safe'/g\" .jupyter/jupyter_notebook_config.py"
@@ -110,16 +109,15 @@ class JupyterLab(object):
                     logger(user=self.user, message='USER EXISTS!', level='INFO')
                     # CHANGE PATH
                     child.sendline("cd /storage/scratch2/%s"%(self.user))
+                    # DEACTIVATE ANY VIRTUALENV
+                    child.sendline('deactivate')
+                    child.sendline('conda deactivate')
                     # ADD ENVIROMENT VARIABLES
-                    child.sendline('export PATH="$PATH:%s/bin"'%(self.conda_pah))
-                    child.sendline('export PATH="$PATH:%s/lib"'%(self.conda_pah))
                     child.sendline('export PATH="$PATH:%s/bin"'%(self.python_path))
                     child.sendline('export PATH="$PATH:%s/lib"'%(self.python_path))
                     child.sendline("export IPYTHONDIR=/storage/scratch2/%s/.ipython"%(self.user))
                     child.sendline("export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
                     child.sendline("export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
-                    # REMOVE POTENTIAL jupyter_notebook_config.py FILE
-                    # child.sendline('rm  .jupyter')
                     # JUPYTER GENERATE CONFIG .jupyter
                     child.sendline("%s notebook --generate-config -y"%(self.jupyter_bin_path))
                     # CREATE .ipyton if not created
@@ -127,6 +125,8 @@ class JupyterLab(object):
                     # CREATE SYMBOLIK LINK TO HOME DIRECTORY IF NOT EXISTING
                     child.sendline('test ! -d /storage/scratch2/%s_home_dir && ln -s /home/%s/ %s_home_dir'%(self.user, self.user, self.user))
                     logger(user=self.user, message='TRY TO CREATE jupyter_notebook_config.py', level='INFO')
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     # CHECK IF jupyter_notebook_config.json CREATED with
                     child.sendline(shell_jupyter_config_path)
 
@@ -142,6 +142,8 @@ class JupyterLab(object):
                     child.sendline(self.credential)
                     child.expect("Verify password:")
                     child.sendline(self.credential)
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
 
                 # CHANGE jupyter_notebook_config.py. KNOW THAT JUPYTER PASSWORD IS SET.
                 if ('Wrote hashed password to' in out_line) and is_jupyter_config:
@@ -161,15 +163,17 @@ class JupyterLab(object):
                     child.sendline(iopub_data_rate_limit)
                     child.sendline(mathjax_config)
                     logger(user=self.user, message='CONFIGURED jupyter_notebook_config.py!', level='CRITICAL')
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     # GRAB UNUSED PORT ON HPC
-                    child.sendline(shell_free_port)
+                    child.sendline('history -c && %s'%(shell_free_port))
 
                 # GRAB FREE PORT [IN CASE OF NO RUNNING JUPYTER]
                 if ("('free port:'," in out_line):
                     jupyter_port = (out_line.split(",")[1].split(")")[0])
                     logger(user=self.user, message='FOUND FREE PORT: %s'%jupyter_port,level='CRITICAL')
                     # GRAB LAST PORT OF RUNNING NOTEBOOK IF EXISTS
-                    child.sendline('%s notebook list'%(self.jupyter_bin_path))
+                    child.sendline('history -c && %s notebook list'%(self.jupyter_bin_path))
 
                 # SEE RUNNING JUPYTER PORTS
                 if ('Currently running servers:' in out_line):
@@ -188,6 +192,8 @@ class JupyterLab(object):
                     checking_running_jupyter = False
                     logger(user=self.user, message='jupyter_port %s' %
                            jupyter_port, level='CRITICAL')
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     child.close(force=True)
                     return is_user, running_jupyter, jupyter_port
 
@@ -196,6 +202,8 @@ class JupyterLab(object):
                     # JUPYTER CONFIG NOT EXISTS AND USER EXISTS
                     logger(user=self.user, message='JUPYTER FAILED TO CREATE CONFIG FILE!',level='ERROR')
                     logger(user=self.user, message='FUNCTION ENDED!', level='ERROR')
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     child.close(force=True)
                     break
 
@@ -204,6 +212,8 @@ class JupyterLab(object):
                 logger(user=self.user, message='jupyter_port %s' %
                        jupyter_port, level='CRITICAL')
                 logger(user=self.user, message="FUNCTION 'configure()' ENDED!", level='WARNING')
+                # CLEAN BASH HISTORY
+                child.sendline('history -c')
                 child.close(force=True)
                 break
 
@@ -267,14 +277,17 @@ class JupyterLab(object):
                     logger(user=self.user, message='LOGIN TO HPC SUCCESSFULL! STARTING JUPYTER...', level='CRITICAL')
                     # CHANGE PATH
                     child.sendline("cd /storage/scratch2/%s"%(self.user))
+                    # DEACTIVATE ANY VIRTUALENV
+                    child.sendline('deactivate')
+                    child.sendline('conda deactivate')
                     # ADD ENVIROMENT VARIABLES
-                    child.sendline('export PATH="$PATH:%s/bin"'%(self.conda_pah))
-                    child.sendline('export PATH="$PATH:%s/lib"'%(self.conda_pah))
                     child.sendline('export PATH="$PATH:%s/bin"'%self.python_path)
                     child.sendline('export PATH="$PATH:%s/lib"'%(self.python_path))
                     child.sendline("export IPYTHONDIR=/storage/scratch2/%s/.ipython"%(self.user))
                     child.sendline("export JUPYTER_CONFIG_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
                     child.sendline("export JUPYTER_DATA_DIR=/storage/scratch2/%s/.jupyter"%(self.user))
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     if running_instance is False:
                         # NEED NEW JUPYTER INSTANCE [MAKE SURE TO KEEP WATCHING OUTPUT]
                         child.sendline("nohup %s lab --no-browser --ip=0.0.0.0 --port=%s &> .jupyter_lab.log & tail -f .jupyter_lab.log"%(self.jupyter_bin_path, remote_port))
@@ -319,6 +332,8 @@ class JupyterLab(object):
                            login_node=0,
                            pid_session=0,
                            state_session='ended')
+                    # CLEAN BASH HISTORY
+                    child.sendline('history -c')
                     child.close(force=True)
                     break
 
@@ -333,12 +348,14 @@ class JupyterLab(object):
                        login_node=0,
                        pid_session=0,
                        state_session='ended')
+                # CLEAN BASH HISTORY
+                child.sendline('history -c')
                 child.close(force=True)
                 break
         return
 
 
-def jupyter_run(conn, user, credential, hostname, conda_pah, python_path, jupyter_bin_path, session_length):
+def jupyter_run(conn, user, credential, hostname, python_path, jupyter_bin_path, session_length):
     """Functions wrapper for python multiprocessing.
 
     Args:
@@ -368,7 +385,7 @@ def jupyter_run(conn, user, credential, hostname, conda_pah, python_path, jupyte
 
     pid = os.getpid()
     # CREATE INSTANCE
-    jupyter_instance = JupyterLab(user, credential, hostname, conda_pah, python_path, jupyter_bin_path, pid, session_length)
+    jupyter_instance = JupyterLab(user, credential, hostname, python_path, jupyter_bin_path, pid, session_length)
     # CHECK CONFIGURATION
     user_exists, running_jupyter, jupyter_port = jupyter_instance.configure()
 
@@ -383,7 +400,7 @@ def jupyter_run(conn, user, credential, hostname, conda_pah, python_path, jupyte
             # FORWARD JUPYTER INSTANCE
             jupyter_instance.forward(local_port=free_port, remote_port=jupyter_port, running_instance=running_jupyter)
         else:
-            logger(user=user, message='USER %s GOT UNEXPECTED ERROR!'%user, level='ERROR')
+            logger(user=user, message='USER %s WAS NOT ABLE TO GET JUPYTER PORT [MAYBE NOT RUNNING OR FREE PORT]!'%user, level='ERROR')
             # UPDATE USER IN DATABASE
             add_db(db_name=DATABASE_NAME,
                    user=user,
