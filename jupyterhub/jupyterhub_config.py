@@ -341,7 +341,7 @@ c.JupyterHub.hub_bind_url = 'http://127.0.0.1:8082'
 #  
 #  .. deprecated: 0.9
 #      Use JupyterHub.bind_url
-#c.JupyterHub.ip = ''
+c.JupyterHub.ip = '0.0.0.0'
 
 ## Supply extra arguments that will be passed to Jinja environment.
 #c.JupyterHub.jinja_environment_options = {}
@@ -867,7 +867,7 @@ c.Spawner.notebook_dir = '/storage/scratch2/%U'
 #  Admin access should be treated the same way root access is.
 #  
 #  Defaults to an empty set, in which case no user has admin access.
-#c.Authenticator.admin_users = set()
+c.Authenticator.admin_users = {'george'}
 
 ## The max age (in seconds) of authentication info before forcing a refresh of
 #  user auth info.
