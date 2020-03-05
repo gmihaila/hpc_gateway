@@ -1,4 +1,4 @@
-# JupyterHub
+![https://jupyterhub.readthedocs.io/en/stable/index.html](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
 
 ## Start Jupyter Hub:
 ```bash
