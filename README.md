@@ -20,6 +20,12 @@ Browse:
 
 </br>
 
+## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
+* in progress
+
+</br>
+
+
 ## Web integrated development environment (IDE)
 * not started yet
 
