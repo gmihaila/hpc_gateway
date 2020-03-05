@@ -15,6 +15,13 @@ $ export LD_LIBRARY_PATH="/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.
 $ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/jupyterhub/etc/jupyterhub/jupyterhub_config.py
 ```
 
+## Setup folders:
+* Follow [this](https://jupyterhub.readthedocs.io/en/0.7.2/getting-started.html#folders-and-file-locations).
+* `/srv/jupyterhub` for all security and runtime files
+* `/etc/jupyterhub` for all configuration files
+* `/var/log` for log files
+
+
 ## Install JupyterHub and JupyterLab from the ground up:
 
 * Use main link [here](https://jupyterhub.readthedocs.io/en/stable/installation-guide-hard.html).
