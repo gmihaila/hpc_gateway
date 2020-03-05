@@ -4,7 +4,7 @@
 ```bash
 $ PATH=$PATH:/home/george/nodejs/bin/
 $ PATH=$PATH:/cm/shared/utils/GCC/6.3.0/bin
-$ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cm/shared/utils/GCC/6.3.0/lib64
+$ LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.3.0/lib64:w
 $ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/jupyterhub/etc/jupyterhub/jupyterhub_config.py
 ```
 
