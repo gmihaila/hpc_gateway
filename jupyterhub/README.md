@@ -1,5 +1,12 @@
 # JupyterHub
 
+## Start Jupyter Hub:
+```bash
+$ PATH=$PATH:/home/george/nodejs/bin/
+$ PATH=$PATH:/cm/shared/utils/GCC/6.3.0/bin
+$ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/jupyterhub/etc/jupyterhub/jupyterhub_config.py
+```
+
 ## Install JupyterHub and JupyterLab from the ground up:
 
 * Use main link [here](https://jupyterhub.readthedocs.io/en/stable/installation-guide-hard.html).
