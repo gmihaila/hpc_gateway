@@ -51,7 +51,7 @@ $ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/j
   /cm/shared/utils/OPENSSL/1.1.1/ssl
   export PKG_CONFIG_PATH=/cm/shared/utils/LIBFFI/lib/pkgconfig/
   pkg-config --cflags libffi
-  LDFLAGS=pkg-config --libs-only-L libffi ./configure --prefix=/cm/shared/utils/PYTHON/jupyterhub --with-ensurepip=install
+  LDFLAGS=`pkg-config --libs-only-L libffi ./configure` --prefix=/cm/shared/utils/PYTHON/jupyterhub --with-ensurepip=install
   ```
   
 ### JupyterHub:
