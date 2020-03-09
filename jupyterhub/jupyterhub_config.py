@@ -382,10 +382,10 @@ c.JupyterHub.ip = '0.0.0.0'
 c.JupyterHub.port = 8000
 
 ## DEPRECATED since version 0.8 : Use ConfigurableHTTPProxy.api_url
-#c.JupyterHub.proxy_api_ip = ''
+c.JupyterHub.proxy_api_ip = '127.0.0.1'
 
 ## DEPRECATED since version 0.8 : Use ConfigurableHTTPProxy.api_url
-#c.JupyterHub.proxy_api_port = 0
+c.JupyterHub.proxy_api_port = 8085
 
 ## DEPRECATED since version 0.8: Use ConfigurableHTTPProxy.auth_token
 #c.JupyterHub.proxy_auth_token = ''
@@ -613,7 +613,7 @@ c.JupyterHub.port = 8000
 #  Some spawners allow shell-style expansion here, allowing you to use
 #  environment variables. Most, including the default, do not. Consult the
 #  documentation for your spawner to verify!
-c.Spawner.cmd = ['/cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub-singleuser']
+c.Spawner.cmd = ['/cm/shared/utils/PYTHON/3.6.5/bin/jupyterhub-singleuser']
 
 ## Maximum number of consecutive failures to allow before shutting down
 #  JupyterHub.
