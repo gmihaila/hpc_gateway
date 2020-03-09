@@ -12,7 +12,7 @@ $ export PATH="/home/george/nodejs/bin/:/cm/shared/utils/GCC/6.3.0/bin:$PATH"
 And rest of them:
 ```bash
 $ export LD_LIBRARY_PATH="/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.3.0/lib64"
-$ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/jupyterhub/etc/jupyterhub/jupyterhub_config.py
+$ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_config.py
 ```
 
 ## Setup folders:
