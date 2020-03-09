@@ -17,9 +17,10 @@ $ /cm/shared/utils/PYTHON/jupyterhub/bin/jupyterhub -f /cm/shared/utils/PYTHON/j
 
 ## Setup folders:
 * Follow [this](https://jupyterhub.readthedocs.io/en/0.7.2/getting-started.html#folders-and-file-locations).
-* `/srv/jupyterhub` for all security and runtime files
-* `/etc/jupyterhub` for all configuration files
-* `/var/log` for log files
+* `/srv/jupyterhub` for all security and runtime files.
+* `/etc/jupyterhub` for all configuration files.
+* `/var/log` for log files.
+* `/cm/share/utils/PYTHON` for python environemnts.
 
 
 ## Install JupyterHub and JupyterLab from the ground up:
