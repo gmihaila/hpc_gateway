@@ -28,7 +28,11 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
 * `/srv/jupyterhub` for all security and runtime files.
 * `/var/log` for log files.
 
-
+## Perform maintanance when Systemd service is running:
+* Stop Service: `systemctl stop jupyterhub.service`
+* Check status if stopped: `systemctl status jupyterhub.service -l`
+* Perform maintanance.
+* Start service back up: `systemctl restart jupyterhub.service`
 
 ## Install JupyterHub and JupyterLab from the ground up:
 * MAKE SURE TO [FIX](https://blog.jupyter.org/security-fix-for-jupyterhub-gitlab-oauthenticator-7b14571d1f76) [THIS](https://nvd.nist.gov/vuln/detail/CVE-2018-7206) ISSUE WITH
