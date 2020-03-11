@@ -31,6 +31,10 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
 
 
 ## Install JupyterHub and JupyterLab from the ground up:
+* MAKE SURE TO [FIX](https://blog.jupyter.org/security-fix-for-jupyterhub-gitlab-oauthenticator-7b14571d1f76) [THIS](https://nvd.nist.gov/vuln/detail/CVE-2018-7206) ISSUE WITH
+ ```bash
+ /opt/jupyterhub/bin/python3 -m pip install --upgrade oauthenticator
+ ```
 
 * Use main link [here](https://jupyterhub.readthedocs.io/en/stable/installation-guide-hard.html).
 * Documentation [here](https://jupyterhub.readthedocs.io/en/0.7.2/index.html).
