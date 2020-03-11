@@ -15,6 +15,12 @@ $ export LD_LIBRARY_PATH="/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.
 $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_config.py
 ```
 
+## Add Kernels:
+* Single-user env is `/cm/shared/utils/PYTHON/3.6.5/bin/python`
+* Transformers: `/cm/shared/utils/PYTHON/transformers/bin/python -m ipykernel install --prefix=/cm/shared/utils/PYTHON/3.6.5/ --name 'transformers' --display-name "Transformers"`
+* Anaconda: `/cm/shared/utils/PYTHON/ANACONDA/5.2/envs/beakerx/bin/python -m ipykernel install --prefix=/cm/shared/utils/PYTHON/3.6.5/ --name 'anaconda' --display-name "Anaconda"`
+* H2o4gpu: `/cm/shared/utils/PYTHON/h2o4gpu-0.3.2/bin/python -m ipykernel install --prefix=/cm/shared/utils/PYTHON/3.6.5/ --name 'h2o4gpu' --display-name "H2o4gpu"`
+
 ## Setup folders:
 * Follow [this](https://jupyterhub.readthedocs.io/en/0.7.2/getting-started.html#folders-and-file-locations).
 * `/opt/jupyterhub` for python environemnts.
