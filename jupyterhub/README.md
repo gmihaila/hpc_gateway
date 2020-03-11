@@ -85,7 +85,7 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
  User=root
  Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/home/george/nodejs/bin/:/cm/shared/utils/GCC/6.3.0/bin:/opt/jupyterhub/bin"
  Environment="LD_LIBRARY_PATH=/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.3.0/lib64"
- ExecStart=/opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_config.py
+ ExecStart=/opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_config.py & >> '/var/log/jupyterhub.log'
 
  [Install]
  WantedBy=multi-user.target
