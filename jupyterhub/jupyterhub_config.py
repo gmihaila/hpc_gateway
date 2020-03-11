@@ -303,7 +303,7 @@ c.JupyterHub.hub_bind_url = 'http://127.0.0.1:8082'
 #  conflict.
 #  
 #  See also `hub_ip` for the ip and `hub_bind_url` for setting the full bind URL.
-#c.JupyterHub.hub_port = 8081
+c.JupyterHub.hub_port = 8082
 
 ## Timeout (in seconds) to wait for spawners to initialize
 #  
