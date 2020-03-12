@@ -1,6 +1,6 @@
-<img src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" align="middle" alt="alt text" width="500" height="150">
+<img align="left" width="500" height="150" src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="alt text" >
 
-
+</br>
 ## Start Jupyter Hub:
 ```bash
 $ PATH=$PATH:/home/george/nodejs/bin/
