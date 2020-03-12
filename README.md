@@ -15,20 +15,21 @@ Automate process of ssh tunneling and port forwarding from HPC cluster to a publ
 Browse:
 `http://jupyterlab.hpc.unt.edu:8080/`
 
+## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
+* Currently running on `vis-04.acs.unt.edu`.
+
+</br>
+
 ## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab)
 * Tested.
 * Will stop using - not reliable.
 
 </br>
 
-## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
-* Currently running on `vis-04.acs.unt.edu`.
-
-</br>
-
-
 ## Web integrated development environment (IDE)
 * not started yet
+
+</br>
 
 ## AutoML Web Interface
 * not started yet
