@@ -48,6 +48,8 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
 ## Steps followed for Talon:
 
 ### Install nodejs and npm from source [here](https://nodejs.org/en/download/):
+  * Unzip and tar.
+  * Configure: `./configure --prefix=/cm/shared/utils/NODE/12.16.1`
   * Already compiled: `PATH=$PATH:/home/george/nodejs/bin/`
   * Need to have loaded: `module load gcc/6.3.0`.
   * JupyterHub proxy: `npm install -g configurable-http-proxy`
