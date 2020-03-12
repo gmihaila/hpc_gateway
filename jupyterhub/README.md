@@ -1,4 +1,4 @@
-![](https://jupyterhub.readthedocs.io/en/stable/_static/logo.png)
+![](https://jupyterhub.readthedocs.io/en/stable/_static/logo.png =250x250)
 
 ## Start Jupyter Hub:
 ```bash
