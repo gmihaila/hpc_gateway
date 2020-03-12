@@ -1,4 +1,4 @@
-<div style="text-align:center"><img src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="alt text" width="500" height="150"></div>
+<img src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" align="middle" alt="alt text" width="500" height="150">
 
 
 ## Start Jupyter Hub:
