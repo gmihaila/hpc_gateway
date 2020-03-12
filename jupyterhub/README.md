@@ -1,4 +1,5 @@
-<img src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="alt text" width="200" height="100">
+<div style="text-align:center"><img src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="alt text" width="500" height="150"></div>
+
 
 ## Start Jupyter Hub:
 ```bash
