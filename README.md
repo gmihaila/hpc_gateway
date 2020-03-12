@@ -2,19 +2,6 @@
 
 </br>
 
-Automate process of ssh tunneling and port forwarding from HPC cluster to a publicly available VM.
-
-* Configure jupyter notebook configuraiton files.
-* Enforce jupyter notebook password useage.
-* Enforces timeout jupyter notebook session [can be customizable].
-* Generates random available ports to forward the HPC session.
-
-## To view Database [Sqlite-Web](https://github.com/coleifer/sqlite-web):
-
-`$ sqlite_web -H 0.0.0.0 database_jupyter_lab.db`
-Browse:
-`http://jupyterlab.hpc.unt.edu:8080/`
-
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
 * Currently running on `vis-04.acs.unt.edu`.
 * Currently running on `vis.acs.unt.edu`.
@@ -24,6 +11,17 @@ Browse:
 ## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab)
 * Tested.
 * Will stop using - not reliable.
+* Automate process of ssh tunneling and port forwarding from HPC cluster to a publicly available VM.
+* Configure jupyter notebook configuraiton files.
+* Enforce jupyter notebook password useage.
+* Enforces timeout jupyter notebook session [can be customizable].
+* Generates random available ports to forward the HPC session.
+
+### To view Database [Sqlite-Web](https://github.com/coleifer/sqlite-web):
+
+`$ sqlite_web -H 0.0.0.0 database_jupyter_lab.db`
+Browse:
+`http://jupyterlab.hpc.unt.edu:8080/`
 
 </br>
 
