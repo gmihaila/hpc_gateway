@@ -22,7 +22,7 @@ Browse:
 
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
 * Running on `vis-04.acs.unt.edu`
-![https://jupyterhub.readthedocs.io/en/stable/index.html](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
+<img width="100" height="80" src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="text" >
 
 </br>
 
