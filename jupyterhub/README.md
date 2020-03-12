@@ -1,4 +1,6 @@
-<img align="center" width="500" height="150" src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="text" >
+<p align="center">
+ <img width="500" height="150" src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="text" >
+</p>
 
 </br>
 
