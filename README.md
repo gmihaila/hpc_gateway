@@ -21,8 +21,7 @@ Browse:
 </br>
 
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
-* Running on `vis-04.acs.unt.edu`
-<img width="100" height="80" src="https://jupyterhub.readthedocs.io/en/stable/_static/logo.png" alt="text" >
+* Currently running on `vis-04.acs.unt.edu`
 
 </br>
 
