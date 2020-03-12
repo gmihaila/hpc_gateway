@@ -21,7 +21,8 @@ Browse:
 </br>
 
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
-* in progress
+* Running on `vis-04.acs.unt.edu`
+![https://jupyterhub.readthedocs.io/en/stable/index.html](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
 
 </br>
 
