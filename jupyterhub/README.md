@@ -1,4 +1,4 @@
-![https://jupyterhub.readthedocs.io/en/stable/index.html](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
+![](https://jupyterhub.readthedocs.io/en/stable/_static/logo.png)
 
 ## Start Jupyter Hub:
 ```bash
@@ -105,3 +105,6 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
  systemctl status jupyterhub.service -l
  systemctl disable /opt/jupyterhub/etc/systemd/jupyterhub.service
  ```
+
+## Overview
+![https://jupyterhub.readthedocs.io/en/stable/index.html](https://jupyterhub.readthedocs.io/en/stable/_images/jhub-fluxogram.jpeg)
