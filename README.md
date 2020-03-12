@@ -16,12 +16,13 @@ Browse:
 `http://jupyterlab.hpc.unt.edu:8080/`
 
 ## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab)
-* in progress
+* Tested.
+* Will stop using - not reliable.
 
 </br>
 
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
-* Currently running on `vis-04.acs.unt.edu`
+* Currently running on `vis-04.acs.unt.edu`.
 
 </br>
 
