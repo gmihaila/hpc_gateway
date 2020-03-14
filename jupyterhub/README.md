@@ -43,7 +43,7 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
  ```
 
 * Use main link [here](https://jupyterhub.readthedocs.io/en/stable/installation-guide-hard.html).
-* Documentation [here](https://jupyterhub.readthedocs.io/en/0.7.2/index.html).
+* Documentation [here](https://jupyterhub.readthedocs.io/en/0.7.2/index.html)[and here](https://readthedocs.org/projects/minrk-jupyterhub/downloads/pdf/latest/).
 * Setting default url to home directory [here](https://github.com/jupyterhub/jupyterhub/issues/929).
 * Troubleshooting [here](https://jupyterhub.readthedocs.io/en/latest/troubleshooting.html#error-after-spawning-my-single-user-server)
 
