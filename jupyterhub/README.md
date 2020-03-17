@@ -86,7 +86,6 @@ $ /opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_co
  After=syslog.target network.target
 
  [Service]
- User=root
  Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/cm/shared/utils/NODE/12.16.1/bin/:/cm/shared/utils/GCC/6.3.0/bin:/opt/jupyterhub/bin"
  Environment="LD_LIBRARY_PATH=/cm/shared/utils/GCC/6.3.0/lib:/cm/shared/utils/GCC/6.3.0/lib64"
  ExecStart=/opt/jupyterhub/bin/jupyterhub -f /opt/jupyterhub/etc/jupyterhub/jupyterhub_config.py & >> '/var/log/jupyterhub.log'
