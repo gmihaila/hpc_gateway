@@ -26,16 +26,15 @@
 * [Add Cluster Configuration](https://osc.github.io/ood-documentation/master/installation/add-cluster-config.html#add-cluster-configuration-files) using [Slurm Example](https://osc.github.io/ood-documentation/master/installation/resource-manager/slurm.html#configure-slurm). File provided here: `/talon.yml` and setting in path: `/etc/ood/config/clusters.d/talon.yml`.
   ```bash
   # /etc/ood/config/clusters.d/talon.yml
-
-v2:
-  metadata:
-    title: "Talon3"
-  login:
-    host: "vis-04.acs.unt.edu"
-  job:
-    adapter: "slurm"
-    bin: "/cm/shared/apps/slurm/16.05.8/bin"
-    conf: "/cm/shared/apps/slurm/var/etc/slurm.conf"
+  v2:
+    metadata:
+      title: "Talon3"
+    login:
+      host: "vis-04.acs.unt.edu"
+    job:
+      adapter: "slurm"
+      bin: "/cm/shared/apps/slurm/16.05.8/bin"
+      conf: "/cm/shared/apps/slurm/var/etc/slurm.conf"
   ```
   * Run [Test Configuration](https://osc.github.io/ood-documentation/master/installation/resource-manager/test.html#test-configuration) to see if it works.
   
