@@ -1,0 +1,11 @@
+# /etc/ood/config/clusters.d/talon.yml
+
+v2:
+  metadata:
+    title: "Talon3"
+  login:
+    host: "vis-04.acs.unt.edu"
+  job:
+    adapter: "slurm"
+    bin: "/cm/shared/apps/slurm/16.05.8/bin"
+    conf: "/cm/shared/apps/slurm/var/etc/slurm.conf"
