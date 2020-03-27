@@ -3,25 +3,13 @@
 </br>
 
 ## Maintanance Apache Server:
-* Status
  ```bash
  systemctl status httpd24-httpd.service httpd24-htcacheclean.service -l
  systemctl try-restart httpd24-httpd.service httpd24-htcacheclean.service
  systemctl stop httpd24-httpd.service httpd24-htcacheclean.service
  systemctl start httpd24-httpd.service httpd24-htcacheclean.service
  ```
-* Restart
- ```bash
- systemctl try-restart httpd24-httpd.service httpd24-htcacheclean.service
- ```
-* Stop
- ```bash
- systemctl stop httpd24-httpd.service httpd24-htcacheclean.service
- ``` 
-* Start
- ```bash
- systemctl start httpd24-httpd.service httpd24-htcacheclean.service
- ```
+ </br>
 
 ## Install
 * [Install Software From RPM](https://osc.github.io/ood-documentation/master/installation/install-software.html#install-software-from-rpm)
