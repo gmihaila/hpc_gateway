@@ -6,6 +6,9 @@
 * Status
  ```bash
  systemctl status httpd24-httpd.service httpd24-htcacheclean.service -l
+ systemctl try-restart httpd24-httpd.service httpd24-htcacheclean.service
+ systemctl stop httpd24-httpd.service httpd24-htcacheclean.service
+ systemctl start httpd24-httpd.service httpd24-htcacheclean.service
  ```
 * Restart
  ```bash
