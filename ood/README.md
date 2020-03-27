@@ -45,6 +45,12 @@
       bin: "/cm/shared/apps/slurm/16.05.8/bin"
       conf: "/cm/shared/apps/slurm/var/etc/slurm.conf"
   ```
+  * Yum install of Git [rh-git29](https://www.softwarecollections.org/en/scls/rhscl/rh-git29/)
+  ```bash
+  yum-config-manager --enable rhel-server-rhscl-7-rpms
+  yum install rh-git29
+  scl enable rh-git29 bash
+  ```
   * Run [Test Configuration](https://osc.github.io/ood-documentation/master/installation/resource-manager/test.html#test-configuration) to see if it works.
   ```bash
   cd /var/www/ood/apps/sys/dashboard
