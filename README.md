@@ -8,6 +8,11 @@
 
 </br>
 
+## [Open OnDemand](https://github.com/gmihaila/hpc_gateway/tree/master/ood)
+* Currently installing & testing on `vis-04.acs.unt.edu`.
+
+</br>
+
 ## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab) [Not Supported Anymore]
 * Tested.
 * Will stop using - not reliable.
