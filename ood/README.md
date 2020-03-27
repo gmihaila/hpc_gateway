@@ -2,6 +2,24 @@
 
 </br>
 
+## Maintanance Apache Server:
+* Status
+ ```bash
+ systemctl status httpd24-httpd.service httpd24-htcacheclean.service -l
+ ```
+* Restart
+ ```bash
+ systemctl try-restart httpd24-httpd.service httpd24-htcacheclean.service
+ ```
+* Stop
+ ```bash
+ systemctl stop httpd24-httpd.service httpd24-htcacheclean.service
+ ``` 
+* Start
+ ```bash
+ systemctl start httpd24-httpd.service httpd24-htcacheclean.service
+ ```
+
 ## Install
 * [Install Software From RPM](https://osc.github.io/ood-documentation/master/installation/install-software.html#install-software-from-rpm)
 * Skip [Modify System Security](https://osc.github.io/ood-documentation/master/installation/modify-system-security.html#modify-system-security)
@@ -37,6 +55,12 @@
       conf: "/cm/shared/apps/slurm/var/etc/slurm.conf"
   ```
   * Run [Test Configuration](https://osc.github.io/ood-documentation/master/installation/resource-manager/test.html#test-configuration) to see if it works.
+  ```bash
+  cd /var/www/ood/apps/sys/dashboard
+  scl enable ondemand -- bin/rake -T test:jobs
+  
+  su gm0234 -c 'scl enable ondemand -- bin/rake test:jobs:talon RAILS_ENV=production'
+  ```
   
 * [To Do] Setup [Interactive Apps](https://osc.github.io/ood-documentation/master/app-development/interactive/setup.html#setup-interactive-apps)
 
