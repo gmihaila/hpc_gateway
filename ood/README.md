@@ -58,7 +58,9 @@
   
   su gm0234 -c 'scl enable ondemand -- bin/rake test:jobs:talon RAILS_ENV=production'
   ```
-  
+ 
+## Apps:
+* [Job Composer](https://osc.github.io/ood-documentation/master/applications/job-composer.html#job-composer-app) installed under `/var/www/ood/apps/sys/myjobs`. To avoid `Disk I/O error` dues to file locking system in file `/var/www/ood/apps/sys/myjobs/config/configuration_singleton.rb` replace `root ||= "~/#{ENV['OOD_PORTAL'] || 'ondemand'}/data/#{ENV['APP_TOKEN'] || 'sys/myjobs'}"` with `root ||= "/storage/scratch2/#{ENV['USER']}/#{ENV['OOD_PORTAL'] || 'ondemand'}/data/#{ENV['APP_TOKEN'] || 'sys/myjobs'}"`. Find modified file here `/configuration_singleton.rb`
 * [To Do] Setup [Interactive Apps](https://osc.github.io/ood-documentation/master/app-development/interactive/setup.html#setup-interactive-apps)
 
   
