@@ -60,6 +60,7 @@
   ```
  
 ## Apps:
+All apps are saved under `cd /var/www/ood/apps/sys/`:
 * [Job Composer](https://osc.github.io/ood-documentation/master/applications/job-composer.html#job-composer-app) installed under `/var/www/ood/apps/sys/myjobs`. To avoid `Disk I/O error` dues to file locking system in file `/var/www/ood/apps/sys/myjobs/config/configuration_singleton.rb` replace `root ||= "~/#{ENV['OOD_PORTAL'] || 'ondemand'}/data/#{ENV['APP_TOKEN'] || 'sys/myjobs'}"` with `root ||= "/storage/scratch2/#{ENV['USER']}/#{ENV['OOD_PORTAL'] || 'ondemand'}/data/#{ENV['APP_TOKEN'] || 'sys/myjobs'}"`. Find modified file in this repo [ood/configuration_singleton.rb](https://github.com/gmihaila/hpc_gateway/blob/master/ood/configuration_singleton.rb)
 * [Jupyter](https://github.com/OSC/bc_example_jupyter)
 * [To Do] Setup [Interactive Apps](https://osc.github.io/ood-documentation/master/app-development/interactive/setup.html#setup-interactive-apps)
