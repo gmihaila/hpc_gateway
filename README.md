@@ -13,7 +13,7 @@
 
 </br>
 
-## [Jupyter Lab](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab) [Not Supported Anymore]
+## [Jupyter Lab Python Server](https://github.com/gmihaila/hpc_gateway/tree/master/jupyter_lab) [Not Supported Anymore]
 * Tested.
 * Will stop using - not reliable.
 * Automate process of ssh tunneling and port forwarding from HPC cluster to a publicly available VM.
