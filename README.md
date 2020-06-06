@@ -5,7 +5,7 @@
 ## [JupyterHub](https://github.com/gmihaila/hpc_gateway/tree/master/jupyterhub)
 * Currently running on `vis-04.acs.unt.edu`.
 * Currently running on `vis.acs.unt.edu`.
-* Dev running on `vis-03.acs.unt.edu`.
+* Dev `vis-02.acs.unt.edu`.
 
 </br>
 
